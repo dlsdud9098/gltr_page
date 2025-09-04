@@ -1,0 +1,94 @@
+%%{init: {'theme':'dark', 'themeVariables': { 'primaryColor':'#ff6b6b', 'primaryTextColor':'#fff', 'primaryBorderColor':'#ff8787', 'lineColor':'#f06595', 'secondaryColor':'#4ecdc4', 'tertiaryColor':'#ffe066', 'background':'#1a1a2e', 'mainBkg':'#16213e', 'secondBkg':'#0f3460', 'tertiaryBkg':'#533483'}}}%%
+
+graph TB
+    subgraph "MongoDB: text2cuts_database"
+        subgraph "📚 text2cuts_projects Collection"
+            P[text2cuts_projects<br/>메인 프로젝트 데이터]
+            P --> P_ID[🔑 _id: ObjectId<br/>project_id: String unique]
+            P --> P_USER[👤 user_id: String<br/>title: String]
+            P --> P_TEXT[📝 original_text: String<br/>입력된 원본 텍스트]
+            
+            P --> P_CHAR[🎭 characters: Array]
+            P_CHAR --> CHAR_DATA[name: String<br/>description: String<br/>visual_description: String<br/>personality: String<br/>reference_prompt: String]
+            
+            P --> P_STORY[📋 storyboard: Object]
+            P_STORY --> STORY_DATA[total_scenes: Number<br/>total_cuts: Number<br/>estimated_reading_time: Number]
+            P_STORY --> SCENES[scenes: Array]
+            SCENES --> SCENE_DATA[scene_number: Number<br/>description: String<br/>location: String<br/>mood: String<br/>characters_present: Array]
+            
+            P --> P_CUTS[🎬 cuts: Array 1-N]
+            P_CUTS --> CUT_DATA[cut_number: Number<br/>cut_type: Enum<br/>scene_number: Number<br/>description: String<br/>dialogue: String<br/>narration: String]
+            CUT_DATA --> CUT_IMG[📷 image_prompt: String<br/>negative_prompt: String<br/>image_url: String<br/>thumbnail_url: String<br/>generation_time: Float]
+            CUT_DATA --> CUT_VISUAL[camera_angle: String<br/>composition: String<br/>style_modifiers: Array]
+            
+            P --> P_SETTINGS[⚙️ settings: Object]
+            P_SETTINGS --> SET_DATA[style_preset: manhwa/manga/comic<br/>aspect_ratio: 9:16/1:1/16:9<br/>quality: draft/standard/high<br/>resolution: String<br/>color_scheme: String]
+            
+            P --> P_STATUS[📊 status & progress]
+            P_STATUS --> STATUS_DATA[status: pending/processing/completed<br/>progress: 0-100%<br/>current_step: String<br/>error_message: String]
+            
+            P --> P_RESULT[💾 results]
+            P_RESULT --> RESULT_DATA[final_webtoon_url: String<br/>preview_images: Array<br/>download_formats: Object]
+            
+            P --> P_META[🕐 metadata]
+            P_META --> META_DATA[created_at: DateTime<br/>updated_at: DateTime<br/>completed_at: DateTime<br/>version: Number<br/>parent_project_id: String]
+        end
+        
+        subgraph "📊 generation_analytics Collection"
+            A[generation_analytics<br/>생성 통계 및 분석]
+            A --> A_ID[🔑 _id: ObjectId<br/>project_id: String ref]
+            
+            A --> A_TEXT[📝 text_analysis]
+            A_TEXT --> TEXT_STATS[text_length: Number<br/>word_count: Number<br/>sentence_count: Number<br/>detected_language: String]
+            
+            A --> A_PERF[⚡ performance_metrics]
+            A_PERF --> PERF_DATA[text_analysis_time: Float<br/>storyboard_generation_time: Float<br/>image_generation_time: Float<br/>total_time: Float<br/>tokens_used: Number]
+            
+            A --> A_QUALITY[⭐ quality_metrics]
+            A_QUALITY --> QUALITY_DATA[consistency_score: 0-1<br/>style_adherence_score: 0-1<br/>cuts_generated: Number<br/>cuts_failed: Number<br/>retry_count: Number]
+            
+            A --> A_FEEDBACK[💬 user_feedback]
+            A_FEEDBACK --> FEEDBACK_DATA[user_rating: 1-5<br/>user_feedback: String<br/>timestamp: DateTime]
+        end
+        
+        subgraph "👥 user_history Collection"
+            U[user_history<br/>사용자 히스토리]
+            U --> U_ID[🔑 _id: ObjectId<br/>user_id: String unique]
+            
+            U --> U_PROJECTS[📁 projects: Array]
+            U_PROJECTS --> PROJ_SUMMARY[project_id: String<br/>title: String<br/>created_at: DateTime<br/>cuts_count: Number<br/>status: String]
+            
+            U --> U_STATS[📈 statistics]
+            U_STATS --> STATS_DATA[total_projects: Number<br/>total_cuts_generated: Number<br/>total_credits_used: Float<br/>average_project_length: Float]
+            
+            U --> U_PREF[🎨 preferences]
+            U_PREF --> PREF_DATA[favorite_styles: Array<br/>preferred_aspect_ratio: String<br/>language: String]
+            
+            U --> U_TIME[🕐 timestamps]
+            U_TIME --> TIME_DATA[last_active: DateTime<br/>created_at: DateTime]
+        end
+        
+        subgraph "🔗 Relationships"
+            REL[데이터 관계]
+            REL --> REL1[text2cuts_projects.project_id<br/>↔<br/>generation_analytics.project_id]
+            REL --> REL2[text2cuts_projects.user_id<br/>↔<br/>user_history.user_id]
+            REL --> REL3[user_history.projects[]<br/>↔<br/>text2cuts_projects.project_id]
+        end
+    end
+    
+    %% Styling connections
+    P -.->|1:1 관계| A_ID
+    P -.->|N:1 관계| U_ID
+    U_PROJECTS -.->|참조| P_ID
+    
+    %% Color coding
+    style P fill:#ff6b6b,stroke:#fff,stroke-width:3px,color:#fff
+    style A fill:#4ecdc4,stroke:#fff,stroke-width:2px,color:#fff
+    style U fill:#ffe066,stroke:#333,stroke-width:2px,color:#333
+    style REL fill:#95e1d3,stroke:#333,stroke-width:2px,color:#333
+    
+    %% Icons and emphasis
+    style P_CUTS fill:#ff8787,stroke:#fff,stroke-width:2px
+    style P_SETTINGS fill:#f06595,stroke:#fff,stroke-width:2px
+    style A_PERF fill:#22b8cf,stroke:#fff,stroke-width:2px
+    style U_STATS fill:#ffd43b,stroke:#333,stroke-width:2px

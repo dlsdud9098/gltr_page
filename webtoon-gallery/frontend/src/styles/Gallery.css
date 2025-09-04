@@ -1,0 +1,105 @@
+.gallery-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.gallery-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 40px;
+  font-weight: bold;
+}
+
+.gallery-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  padding: 0 20px;
+}
+
+.webtoon-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  max-width: 320px;
+}
+
+.webtoon-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.thumbnail-wrapper {
+  width: 100%;
+  aspect-ratio: 2/3;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.webtoon-card:hover .thumbnail {
+  transform: scale(1.05);
+}
+
+.webtoon-info {
+  padding: 20px;
+  background: white;
+}
+
+.webtoon-title {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+.webtoon-author {
+  color: #666;
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+.webtoon-episodes {
+  color: #999;
+  font-size: 0.9rem;
+  margin: 5px 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #666;
+}
+
+.loading-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  font-size: 1rem;
+  color: #666;
+}
+
+.end-message {
+  text-align: center;
+  padding: 40px;
+  font-size: 1rem;
+  color: #999;
+}

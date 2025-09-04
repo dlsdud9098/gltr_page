@@ -1,0 +1,46 @@
+graph TB
+    subgraph "MongoDB Database: text2cuts_db"
+        subgraph "text2cuts_projects"
+            P[Project]
+            P --> P1[project_id, user_id, title]
+            P --> P2[original_text: 입력 텍스트]
+            P --> P3[characters: 캐릭터 배열]
+            P3 --> P3A[name, description<br/>visual_description<br/>reference_prompt]
+            P --> P4[storyboard: 스토리보드]
+            P4 --> P4A[scenes: 씬 배열<br/>total_cuts: 총 컷 수]
+            P --> P5[cuts: 컷 배열 1-N]
+            P5 --> P5A[cut_number: 순서<br/>description: 설명<br/>dialogue: 대사]
+            P5 --> P5B[image_prompt: 프롬프트<br/>image_url: 생성 이미지]
+            P --> P6[settings: 설정]
+            P6 --> P6A[style: manhwa/manga<br/>aspect_ratio: 9:16<br/>quality: high]
+            P --> P7[status: 상태]
+            P7 --> P7A[pending→processing→completed<br/>progress: 0-100%]
+            P --> P8[timestamps]
+            P8 --> P8A[created_at<br/>updated_at<br/>completed_at]
+        end
+        
+        subgraph "generation_analytics"
+            A[Analytics]
+            A --> A1[project_id: 참조]
+            A --> A2[performance]
+            A2 --> A2A[generation_time<br/>tokens_used]
+            A --> A3[quality]
+            A3 --> A3A[consistency_score<br/>user_rating]
+        end
+        
+        subgraph "user_history"
+            U[User History]
+            U --> U1[user_id: 사용자ID]
+            U --> U2[projects: 프로젝트 목록]
+            U --> U3[statistics]
+            U3 --> U3A[total_projects<br/>total_cuts<br/>credits_used]
+        end
+    end
+    
+    P -.->|1:1| A1
+    P -.->|N:1| U1
+    U2 -.->|참조| P1
+    
+    style P fill:#f9f,stroke:#333,stroke-width:4px
+    style A fill:#bbf,stroke:#333,stroke-width:2px
+    style U fill:#bfb,stroke:#333,stroke-width:2px
