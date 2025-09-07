@@ -106,7 +106,7 @@ const WebtoonPage = () => {
 
   const fetchRecommendations = async () => {
     try {
-      const response = await api.get('/api/webtoons?page=1&limit=6');
+      const response = await api.get('/api/webtoons?page=1&per_page=6');
       setRecommendations(response.data.webtoons.filter(w => w.id !== parseInt(id)));
     } catch (error) {
       console.error('Failed to fetch recommendations:', error);
