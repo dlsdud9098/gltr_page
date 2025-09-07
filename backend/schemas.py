@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
+from uuid import UUID
 
 # Enums
 class WebtoonStatus(str, Enum):
@@ -50,7 +51,7 @@ class WebtoonUpdate(BaseModel):
     status: Optional[WebtoonStatus] = None
 
 class WebtoonInDB(WebtoonBase):
-    id: int
+    id: UUID
     thumbnail_url: Optional[str]
     status: WebtoonStatus
     view_count: int
@@ -81,7 +82,7 @@ class DialogueBase(BaseModel):
     dialogue_order: Optional[int] = 1
 
 class DialogueCreate(DialogueBase):
-    scene_id: int
+    scene_id: UUID
 
 class DialogueUpdate(BaseModel):
     who_speaks: Optional[str] = Field(None, max_length=100)
@@ -90,8 +91,8 @@ class DialogueUpdate(BaseModel):
     dialogue_order: Optional[int] = None
 
 class DialogueInDB(DialogueBase):
-    id: int
-    scene_id: int
+    id: UUID
+    scene_id: UUID
     created_at: datetime
     
     class Config:
@@ -108,7 +109,7 @@ class SceneBase(BaseModel):
     panel_layout: Optional[str] = Field(None, max_length=50)
 
 class SceneCreate(SceneBase):
-    webtoon_id: int
+    webtoon_id: UUID
     image_url: Optional[str] = None
     character_positions: Optional[Dict[str, Any]] = None
 
@@ -121,8 +122,8 @@ class SceneUpdate(BaseModel):
     scene_number: Optional[int] = None
 
 class SceneInDB(SceneBase):
-    id: int
-    webtoon_id: int
+    id: UUID
+    webtoon_id: UUID
     image_url: Optional[str]
     character_positions: Optional[Dict[str, Any]]
     created_at: datetime
@@ -143,7 +144,7 @@ class CharacterBase(BaseModel):
     role: Optional[str] = Field(None, max_length=50)
 
 class CharacterCreate(CharacterBase):
-    webtoon_id: int
+    webtoon_id: UUID
     image_url: Optional[str] = None
 
 class CharacterUpdate(BaseModel):
@@ -155,8 +156,8 @@ class CharacterUpdate(BaseModel):
     image_url: Optional[str] = None
 
 class CharacterInDB(CharacterBase):
-    id: int
-    webtoon_id: int
+    id: UUID
+    webtoon_id: UUID
     image_url: Optional[str]
     created_at: datetime
     
@@ -174,12 +175,12 @@ class EditHistoryBase(BaseModel):
     edit_command: Optional[str] = None
 
 class EditHistoryCreate(EditHistoryBase):
-    scene_id: int  # episode_id를 scene_id로 변경
+    scene_id: UUID  # episode_id를 scene_id로 변경
     session_id: str
 
 class EditHistoryInDB(EditHistoryBase):
-    id: int
-    scene_id: int
+    id: UUID
+    scene_id: UUID
     session_id: str
     created_at: datetime
     
@@ -195,19 +196,19 @@ class CommentBase(BaseModel):
     author_name: Optional[str] = "익명"
 
 class CommentCreate(CommentBase):
-    webtoon_id: int
+    webtoon_id: UUID
     scene_id: Optional[int] = None  # episode_id를 scene_id로 변경
-    parent_comment_id: Optional[int] = None
+    parent_comment_id: Optional[UUID] = None
     session_id: Optional[str] = None
 
 class CommentUpdate(BaseModel):
     content: str
 
 class CommentInDB(CommentBase):
-    id: int
-    webtoon_id: int
+    id: UUID
+    webtoon_id: UUID
     scene_id: Optional[int]
-    parent_comment_id: Optional[int]
+    parent_comment_id: Optional[UUID]
     session_id: Optional[str]
     created_at: datetime
     updated_at: datetime
@@ -221,12 +222,12 @@ class CommentResponse(CommentInDB):
 
 # Like schemas
 class LikeCreate(BaseModel):
-    webtoon_id: int
+    webtoon_id: UUID
     session_id: str
 
 class LikeResponse(BaseModel):
-    id: int
-    webtoon_id: int
+    id: UUID
+    webtoon_id: UUID
     session_id: str
     created_at: datetime
     
@@ -239,25 +240,25 @@ class ChatMessageBase(BaseModel):
     sender_name: Optional[str] = None
 
 class ChatMessageCreate(ChatMessageBase):
-    webtoon_id: int
+    webtoon_id: UUID
     scene_id: Optional[int] = None  # episode_id를 scene_id로 변경
     sender_type: str = Field(..., pattern="^(user|character)$")
     character_id: Optional[int] = None
-    parent_message_id: Optional[int] = None
+    parent_message_id: Optional[UUID] = None
     session_id: Optional[str] = None
 
 class ChatMessageUpdate(BaseModel):
     is_read: Optional[bool] = None
 
 class ChatMessageInDB(ChatMessageBase):
-    id: int
-    webtoon_id: int
+    id: UUID
+    webtoon_id: UUID
     scene_id: Optional[int]
     sender_type: str
     session_id: Optional[str]
     is_read: bool
     character_id: Optional[int]
-    parent_message_id: Optional[int]
+    parent_message_id: Optional[UUID]
     created_at: datetime
     
     class Config:
@@ -284,7 +285,7 @@ class ImageAssetCreate(ImageAssetBase):
     session_id: Optional[str] = None
 
 class ImageAssetInDB(ImageAssetBase):
-    id: int
+    id: UUID
     file_path: str
     file_name: str
     file_size: Optional[int]
@@ -312,7 +313,7 @@ class GenerationSessionCreate(BaseModel):
     session_id: str
 
 class GenerationSessionResponse(BaseModel):
-    id: int
+    id: UUID
     session_id: str
     webtoon_id: Optional[int]
     input_text: str

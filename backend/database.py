@@ -13,7 +13,7 @@ load_dotenv()
 # Database URL from environment
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://postgres:password@localhost:5432/gltr_webtoon"
+    "postgresql://postgres:1234@localhost:5432/gltr_webtoon"
 )
 
 # Create engine

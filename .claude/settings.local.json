@@ -12,7 +12,12 @@
       "Bash(pkill:*)",
       "Bash(lsof:*)",
       "Read(//home/apic/Documents/gltr_days/일지/2025-09-07/**)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(kill:*)",
+      "Bash(cat:*)",
+      "Read(//home/apic/python/**)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []

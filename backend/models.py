@@ -2,16 +2,18 @@
 Database models for GLTR Webtoon Platform (Updated for Text2Cuts)
 """
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, JSON, UniqueConstraint, Index
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
+import uuid
 
 Base = declarative_base()
 
 class Webtoon(Base):
     __tablename__ = 'webtoons'
     
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     title = Column(String(200), nullable=False)
     summary = Column(Text)  # 추가: 스토리 요약
     description = Column(Text)
@@ -41,8 +43,8 @@ class Webtoon(Base):
 class Scene(Base):
     __tablename__ = 'scenes'
     
-    id = Column(Integer, primary_key=True, index=True)
-    webtoon_id = Column(Integer, ForeignKey('webtoons.id', ondelete='CASCADE'))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id', ondelete='CASCADE'))
     scene_number = Column(Integer, nullable=False)
     scene_description = Column(Text)
     image_url = Column(String(500))
@@ -69,8 +71,8 @@ class Scene(Base):
 class Dialogue(Base):
     __tablename__ = 'dialogues'
     
-    id = Column(Integer, primary_key=True, index=True)
-    scene_id = Column(Integer, ForeignKey('scenes.id', ondelete='CASCADE'))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    scene_id = Column(UUID(as_uuid=True), ForeignKey('scenes.id', ondelete='CASCADE'))
     who_speaks = Column(String(100), nullable=False)
     dialogue = Column(Text, nullable=False)
     fact_or_fiction = Column(String(20), default='fiction')
@@ -89,8 +91,8 @@ class Dialogue(Base):
 class Character(Base):
     __tablename__ = 'characters'
     
-    id = Column(Integer, primary_key=True, index=True)
-    webtoon_id = Column(Integer, ForeignKey('webtoons.id', ondelete='CASCADE'))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id', ondelete='CASCADE'))
     name = Column(String(100), nullable=False)
     description = Column(Text)
     appearance = Column(Text)
@@ -107,8 +109,8 @@ class Character(Base):
 class EditHistory(Base):
     __tablename__ = 'edit_history'
     
-    id = Column(Integer, primary_key=True, index=True)
-    scene_id = Column(Integer, ForeignKey('scenes.id', ondelete='CASCADE'))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    scene_id = Column(UUID(as_uuid=True), ForeignKey('scenes.id', ondelete='CASCADE'))
     session_id = Column(String(100))
     edit_type = Column(String(50))
     original_content = Column(JSON)
@@ -123,8 +125,8 @@ class EditHistory(Base):
 class Comment(Base):
     __tablename__ = 'comments'
     
-    id = Column(Integer, primary_key=True, index=True)
-    webtoon_id = Column(Integer, ForeignKey('webtoons.id', ondelete='CASCADE'))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id', ondelete='CASCADE'))
     scene_id = Column(Integer, ForeignKey('scenes.id', ondelete='CASCADE'), nullable=True)
     author_name = Column(String(100), default='익명')
     content = Column(Text, nullable=False)
@@ -142,7 +144,7 @@ class Comment(Base):
 class GenerationSession(Base):
     __tablename__ = 'generation_sessions'
     
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     session_id = Column(String(100), nullable=False, index=True)
     webtoon_id = Column(Integer, ForeignKey('webtoons.id'), nullable=True)
     input_text = Column(Text)
@@ -164,7 +166,7 @@ class GenerationSession(Base):
 class ImageAsset(Base):
     __tablename__ = 'image_assets'
     
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     file_path = Column(String(500), nullable=False)
     file_name = Column(String(200), nullable=False)
     file_size = Column(Integer)
@@ -172,7 +174,7 @@ class ImageAsset(Base):
     width = Column(Integer)
     height = Column(Integer)
     webtoon_id = Column(Integer, ForeignKey('webtoons.id'), nullable=True)
-    scene_id = Column(Integer, ForeignKey('scenes.id'), nullable=True)
+    scene_id = Column(UUID(as_uuid=True), ForeignKey('scenes.id'), nullable=True)
     asset_type = Column(String(50))
     session_id = Column(String(100))
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -185,8 +187,8 @@ class ImageAsset(Base):
 class Like(Base):
     __tablename__ = 'likes'
     
-    id = Column(Integer, primary_key=True, index=True)
-    webtoon_id = Column(Integer, ForeignKey('webtoons.id', ondelete='CASCADE'))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id', ondelete='CASCADE'))
     session_id = Column(String(100), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     
@@ -201,16 +203,16 @@ class Like(Base):
 class ChatMessage(Base):
     __tablename__ = 'chat_messages'
     
-    id = Column(Integer, primary_key=True, index=True)
-    webtoon_id = Column(Integer, ForeignKey('webtoons.id', ondelete='CASCADE'))
-    scene_id = Column(Integer, ForeignKey('scenes.id'), nullable=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
+    webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id', ondelete='CASCADE'))
+    scene_id = Column(UUID(as_uuid=True), ForeignKey('scenes.id'), nullable=True)
     sender_type = Column(String(20), nullable=False)  # 'user' or 'character'
     sender_name = Column(String(100))
     message = Column(Text, nullable=False)
     session_id = Column(String(100))
     is_read = Column(Boolean, default=False)
-    character_id = Column(Integer, ForeignKey('characters.id'), nullable=True)
-    parent_message_id = Column(Integer, ForeignKey('chat_messages.id'), nullable=True)
+    character_id = Column(UUID(as_uuid=True), ForeignKey('characters.id'), nullable=True)
+    parent_message_id = Column(UUID(as_uuid=True), ForeignKey('chat_messages.id'), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
