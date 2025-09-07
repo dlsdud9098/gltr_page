@@ -8,7 +8,7 @@ import os
 from dotenv import load_dotenv
 
 from database import init_db
-from routers import webtoons_router, episodes_router, interactions_router, chat_router
+from routers import webtoons_router, scenes_router, interactions_router, chat_router
 
 load_dotenv()
 
@@ -38,7 +38,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Include routers
 app.include_router(webtoons_router.router, prefix="/api/webtoons", tags=["Webtoons"])
-app.include_router(episodes_router.router, prefix="/api/episodes", tags=["Episodes"])
+app.include_router(scenes_router.router, prefix="/api/scenes", tags=["Scenes"])
 app.include_router(interactions_router.router, prefix="/api/interactions", tags=["Interactions"])
 app.include_router(chat_router.router, prefix="/api", tags=["Chat"])
 

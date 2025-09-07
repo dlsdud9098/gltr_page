@@ -1,5 +1,5 @@
 """
-Pydantic schemas for API validation (Updated for Text2Cuts)
+Pydantic schemas for API validation (No Auth Version)
 """
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
@@ -18,20 +18,14 @@ class EditType(str, Enum):
     LAYOUT = "layout"
     DIALOGUE = "dialogue"
 
-class FactOrFiction(str, Enum):
-    FACT = "fact"
-    FICTION = "fiction"
-
 # Webtoon schemas
 class WebtoonBase(BaseModel):
     title: str = Field(..., max_length=200)
-    summary: Optional[str] = None  # 추가
     description: Optional[str] = None
     author_name: Optional[str] = Field(None, max_length=100)
     genre: Optional[str] = Field(None, max_length=50)
     theme: Optional[str] = Field(None, max_length=100)
     story_style: Optional[str] = Field(None, max_length=100)
-    number_of_cuts: Optional[int] = None  # 추가
 
 class WebtoonCreate(WebtoonBase):
     thumbnail_url: Optional[str] = None
@@ -39,14 +33,12 @@ class WebtoonCreate(WebtoonBase):
 
 class WebtoonUpdate(BaseModel):
     title: Optional[str] = Field(None, max_length=200)
-    summary: Optional[str] = None
     description: Optional[str] = None
     thumbnail_url: Optional[str] = None
     author_name: Optional[str] = Field(None, max_length=100)
     genre: Optional[str] = Field(None, max_length=50)
     theme: Optional[str] = Field(None, max_length=100)
     story_style: Optional[str] = Field(None, max_length=100)
-    number_of_cuts: Optional[int] = None
     status: Optional[WebtoonStatus] = None
 
 class WebtoonInDB(WebtoonBase):
@@ -65,7 +57,6 @@ class WebtoonInDB(WebtoonBase):
 class WebtoonResponse(WebtoonInDB):
     is_owner: Optional[bool] = False
     is_liked: Optional[bool] = False
-    scenes: Optional[List['SceneResponse']] = []
 
 class WebtoonListResponse(BaseModel):
     webtoons: List[WebtoonResponse]
@@ -73,54 +64,32 @@ class WebtoonListResponse(BaseModel):
     page: int
     per_page: int
 
-# Dialogue schemas (신규)
-class DialogueBase(BaseModel):
-    who_speaks: str = Field(..., max_length=100)
-    dialogue: str
-    fact_or_fiction: Optional[FactOrFiction] = FactOrFiction.FICTION
-    dialogue_order: Optional[int] = 1
-
-class DialogueCreate(DialogueBase):
-    scene_id: int
-
-class DialogueUpdate(BaseModel):
-    who_speaks: Optional[str] = Field(None, max_length=100)
+# Episode schemas
+class EpisodeBase(BaseModel):
+    episode_number: int
+    title: Optional[str] = Field(None, max_length=200)
+    scene_order: int
     dialogue: Optional[str] = None
-    fact_or_fiction: Optional[FactOrFiction] = None
-    dialogue_order: Optional[int] = None
-
-class DialogueInDB(DialogueBase):
-    id: int
-    scene_id: int
-    created_at: datetime
-    
-    class Config:
-        from_attributes = True
-
-class DialogueResponse(DialogueInDB):
-    pass
-
-# Scene schemas (Episode를 Scene로 변경)
-class SceneBase(BaseModel):
-    scene_number: int
-    scene_description: Optional[str] = None
+    description: Optional[str] = None
     narration: Optional[str] = None
     panel_layout: Optional[str] = Field(None, max_length=50)
 
-class SceneCreate(SceneBase):
+class EpisodeCreate(EpisodeBase):
     webtoon_id: int
     image_url: Optional[str] = None
     character_positions: Optional[Dict[str, Any]] = None
 
-class SceneUpdate(BaseModel):
-    scene_description: Optional[str] = None
+class EpisodeUpdate(BaseModel):
+    title: Optional[str] = Field(None, max_length=200)
+    dialogue: Optional[str] = None
+    description: Optional[str] = None
     narration: Optional[str] = None
     image_url: Optional[str] = None
     character_positions: Optional[Dict[str, Any]] = None
     panel_layout: Optional[str] = Field(None, max_length=50)
-    scene_number: Optional[int] = None
+    scene_order: Optional[int] = None
 
-class SceneInDB(SceneBase):
+class EpisodeInDB(EpisodeBase):
     id: int
     webtoon_id: int
     image_url: Optional[str]
@@ -131,8 +100,8 @@ class SceneInDB(SceneBase):
     class Config:
         from_attributes = True
 
-class SceneResponse(SceneInDB):
-    dialogues: List[DialogueResponse] = []
+class EpisodeResponse(EpisodeInDB):
+    pass
 
 # Character schemas
 class CharacterBase(BaseModel):
@@ -174,12 +143,12 @@ class EditHistoryBase(BaseModel):
     edit_command: Optional[str] = None
 
 class EditHistoryCreate(EditHistoryBase):
-    scene_id: int  # episode_id를 scene_id로 변경
+    episode_id: int
     session_id: str
 
 class EditHistoryInDB(EditHistoryBase):
     id: int
-    scene_id: int
+    episode_id: int
     session_id: str
     created_at: datetime
     
@@ -196,7 +165,7 @@ class CommentBase(BaseModel):
 
 class CommentCreate(CommentBase):
     webtoon_id: int
-    scene_id: Optional[int] = None  # episode_id를 scene_id로 변경
+    episode_id: Optional[int] = None
     parent_comment_id: Optional[int] = None
     session_id: Optional[str] = None
 
@@ -206,7 +175,7 @@ class CommentUpdate(BaseModel):
 class CommentInDB(CommentBase):
     id: int
     webtoon_id: int
-    scene_id: Optional[int]
+    episode_id: Optional[int]
     parent_comment_id: Optional[int]
     session_id: Optional[str]
     created_at: datetime
@@ -233,6 +202,7 @@ class LikeResponse(BaseModel):
     class Config:
         from_attributes = True
 
+
 # Chat Message schemas
 class ChatMessageBase(BaseModel):
     message: str
@@ -240,7 +210,7 @@ class ChatMessageBase(BaseModel):
 
 class ChatMessageCreate(ChatMessageBase):
     webtoon_id: int
-    scene_id: Optional[int] = None  # episode_id를 scene_id로 변경
+    episode_id: Optional[int] = None
     sender_type: str = Field(..., pattern="^(user|character)$")
     character_id: Optional[int] = None
     parent_message_id: Optional[int] = None
@@ -252,7 +222,7 @@ class ChatMessageUpdate(BaseModel):
 class ChatMessageInDB(ChatMessageBase):
     id: int
     webtoon_id: int
-    scene_id: Optional[int]
+    episode_id: Optional[int]
     sender_type: str
     session_id: Optional[str]
     is_read: bool
@@ -280,7 +250,7 @@ class ImageAssetCreate(ImageAssetBase):
     width: Optional[int] = None
     height: Optional[int] = None
     webtoon_id: Optional[int] = None
-    scene_id: Optional[int] = None  # episode_id를 scene_id로 변경
+    episode_id: Optional[int] = None
     session_id: Optional[str] = None
 
 class ImageAssetInDB(ImageAssetBase):
@@ -292,7 +262,7 @@ class ImageAssetInDB(ImageAssetBase):
     width: Optional[int]
     height: Optional[int]
     webtoon_id: Optional[int]
-    scene_id: Optional[int]
+    episode_id: Optional[int]
     session_id: Optional[str]
     created_at: datetime
     
@@ -316,12 +286,9 @@ class GenerationSessionResponse(BaseModel):
     session_id: str
     webtoon_id: Optional[int]
     input_text: str
-    generation_result: Optional[Dict[str, Any]]  # 추가
     summary: Optional[str]
     theme: Optional[str]
     story_style: Optional[str]
-    story_title: Optional[str]  # 추가
-    number_of_cuts: Optional[int]  # 추가
     original_language: Optional[str]
     llm_model: Optional[str]
     status: str
@@ -329,25 +296,6 @@ class GenerationSessionResponse(BaseModel):
     
     class Config:
         from_attributes = True
-
-# Text2Cuts Generation Result Schema
-class Text2CutsDialogue(BaseModel):
-    who_speaks: str
-    dialogue: str
-    fact_or_fiction: str = "fiction"
-
-class Text2CutsScene(BaseModel):
-    scene_number: int
-    scene_description: str
-    dialogues: List[Text2CutsDialogue]
-
-class Text2CutsResult(BaseModel):
-    summary: str
-    theme: str
-    story_style: str
-    number_of_cuts: int
-    story_title: str
-    scenes: List[Text2CutsScene]
 
 # Pagination
 class PaginationParams(BaseModel):

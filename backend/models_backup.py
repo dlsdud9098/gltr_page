@@ -1,5 +1,5 @@
 """
-Database models for GLTR Webtoon Platform (Updated for Text2Cuts)
+Database models for GLTR Webtoon Platform (No Auth Version)
 """
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Boolean, JSON, UniqueConstraint, Index
 from sqlalchemy.ext.declarative import declarative_base
@@ -13,14 +13,12 @@ class Webtoon(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(200), nullable=False)
-    summary = Column(Text)  # 추가: 스토리 요약
     description = Column(Text)
     thumbnail_url = Column(String(500))
     author_name = Column(String(100), default='Anonymous')
     genre = Column(String(50))
     theme = Column(String(100))
     story_style = Column(String(100))
-    number_of_cuts = Column(Integer)  # 추가: 컷 수
     status = Column(String(20), default='published')
     view_count = Column(Integer, default=0)
     like_count = Column(Integer, default=0)
@@ -29,7 +27,7 @@ class Webtoon(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    scenes = relationship("Scene", back_populates="webtoon", cascade="all, delete-orphan")
+    episodes = relationship("Episode", back_populates="webtoon", cascade="all, delete-orphan")
     characters = relationship("Character", back_populates="webtoon", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="webtoon", cascade="all, delete-orphan")
     generation_sessions = relationship("GenerationSession", back_populates="webtoon")
@@ -37,14 +35,17 @@ class Webtoon(Base):
     likes = relationship("Like", back_populates="webtoon", cascade="all, delete-orphan")
 
 
-class Scene(Base):
-    __tablename__ = 'scenes'
+class Episode(Base):
+    __tablename__ = 'episodes'
     
     id = Column(Integer, primary_key=True, index=True)
     webtoon_id = Column(Integer, ForeignKey('webtoons.id', ondelete='CASCADE'))
-    scene_number = Column(Integer, nullable=False)
-    scene_description = Column(Text)
+    episode_number = Column(Integer, nullable=False)
+    title = Column(String(200))
+    scene_order = Column(Integer, nullable=False)
     image_url = Column(String(500))
+    dialogue = Column(Text)
+    description = Column(Text)
     narration = Column(Text)
     character_positions = Column(JSON)
     panel_layout = Column(String(50))
@@ -52,36 +53,14 @@ class Scene(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    webtoon = relationship("Webtoon", back_populates="scenes")
-    dialogues = relationship("Dialogue", back_populates="scene", cascade="all, delete-orphan")
-    edit_history = relationship("EditHistory", back_populates="scene", cascade="all, delete-orphan")
-    comments = relationship("Comment", back_populates="scene", cascade="all, delete-orphan")
-    images = relationship("ImageAsset", back_populates="scene")
-    chat_messages = relationship("ChatMessage", back_populates="scene")
+    webtoon = relationship("Webtoon", back_populates="episodes")
+    edit_history = relationship("EditHistory", back_populates="episode", cascade="all, delete-orphan")
+    comments = relationship("Comment", back_populates="episode", cascade="all, delete-orphan")
+    images = relationship("ImageAsset", back_populates="episode")
     
     __table_args__ = (
-        UniqueConstraint('webtoon_id', 'scene_number'),
-        Index('idx_scenes_order', 'webtoon_id', 'scene_number'),
-    )
-
-
-class Dialogue(Base):
-    __tablename__ = 'dialogues'
-    
-    id = Column(Integer, primary_key=True, index=True)
-    scene_id = Column(Integer, ForeignKey('scenes.id', ondelete='CASCADE'))
-    who_speaks = Column(String(100), nullable=False)
-    dialogue = Column(Text, nullable=False)
-    fact_or_fiction = Column(String(20), default='fiction')
-    dialogue_order = Column(Integer, default=1)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    
-    # Relationships
-    scene = relationship("Scene", back_populates="dialogues")
-    
-    __table_args__ = (
-        UniqueConstraint('scene_id', 'dialogue_order'),
-        Index('idx_dialogues_order', 'scene_id', 'dialogue_order'),
+        UniqueConstraint('webtoon_id', 'episode_number', 'scene_order'),
+        Index('idx_episodes_order', 'webtoon_id', 'episode_number', 'scene_order'),
     )
 
 
@@ -100,14 +79,13 @@ class Character(Base):
     
     # Relationships
     webtoon = relationship("Webtoon", back_populates="characters")
-    chat_messages = relationship("ChatMessage", back_populates="character")
 
 
 class EditHistory(Base):
     __tablename__ = 'edit_history'
     
     id = Column(Integer, primary_key=True, index=True)
-    scene_id = Column(Integer, ForeignKey('scenes.id', ondelete='CASCADE'))
+    episode_id = Column(Integer, ForeignKey('episodes.id', ondelete='CASCADE'))
     session_id = Column(String(100))
     edit_type = Column(String(50))
     original_content = Column(JSON)
@@ -116,7 +94,7 @@ class EditHistory(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
-    scene = relationship("Scene", back_populates="edit_history")
+    episode = relationship("Episode", back_populates="edit_history")
 
 
 class Comment(Base):
@@ -124,7 +102,7 @@ class Comment(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     webtoon_id = Column(Integer, ForeignKey('webtoons.id', ondelete='CASCADE'))
-    scene_id = Column(Integer, ForeignKey('scenes.id', ondelete='CASCADE'), nullable=True)
+    episode_id = Column(Integer, ForeignKey('episodes.id', ondelete='CASCADE'), nullable=True)
     author_name = Column(String(100), default='익명')
     content = Column(Text, nullable=False)
     parent_comment_id = Column(Integer, ForeignKey('comments.id'), nullable=True)
@@ -134,7 +112,7 @@ class Comment(Base):
     
     # Relationships
     webtoon = relationship("Webtoon", back_populates="comments")
-    scene = relationship("Scene", back_populates="comments")
+    episode = relationship("Episode", back_populates="comments")
     replies = relationship("Comment", backref="parent", remote_side=[id])
 
 
@@ -145,12 +123,9 @@ class GenerationSession(Base):
     session_id = Column(String(100), nullable=False, index=True)
     webtoon_id = Column(Integer, ForeignKey('webtoons.id'), nullable=True)
     input_text = Column(Text)
-    generation_result = Column(JSON)  # 추가: 생성된 전체 JSON 결과 저장
     summary = Column(Text)
     theme = Column(String(200))
     story_style = Column(String(100))
-    story_title = Column(String(200))  # 추가: 생성된 스토리 제목
-    number_of_cuts = Column(Integer)  # 추가: 생성된 컷 수
     original_language = Column(String(10))
     llm_model = Column(String(50))
     status = Column(String(20))
@@ -171,14 +146,14 @@ class ImageAsset(Base):
     width = Column(Integer)
     height = Column(Integer)
     webtoon_id = Column(Integer, ForeignKey('webtoons.id'), nullable=True)
-    scene_id = Column(Integer, ForeignKey('scenes.id'), nullable=True)
+    episode_id = Column(Integer, ForeignKey('episodes.id'), nullable=True)
     asset_type = Column(String(50))
     session_id = Column(String(100))
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
     webtoon = relationship("Webtoon", back_populates="images")
-    scene = relationship("Scene", back_populates="images")
+    episode = relationship("Episode", back_populates="images")
 
 
 class Like(Base):
@@ -202,7 +177,7 @@ class ChatMessage(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     webtoon_id = Column(Integer, ForeignKey('webtoons.id', ondelete='CASCADE'))
-    scene_id = Column(Integer, ForeignKey('scenes.id'), nullable=True)
+    episode_id = Column(Integer, ForeignKey('episodes.id'), nullable=True)
     sender_type = Column(String(20), nullable=False)  # 'user' or 'character'
     sender_name = Column(String(100))
     message = Column(Text, nullable=False)
@@ -213,7 +188,7 @@ class ChatMessage(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     
     # Relationships
-    webtoon = relationship("Webtoon", back_populates="chat_messages")
-    scene = relationship("Scene", back_populates="chat_messages")
-    character = relationship("Character", back_populates="chat_messages")
+    webtoon = relationship("Webtoon", backref="chat_messages")
+    episode = relationship("Episode", backref="chat_messages")
+    character = relationship("Character", backref="chat_messages")
     replies = relationship("ChatMessage", backref="parent", remote_side=[id])
