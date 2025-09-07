@@ -71,7 +71,7 @@ const MainPage = () => {
           description={
             <div className="webtoon-meta">
               <div className="webtoon-author">
-                작가: {webtoon.author?.username || '익명'}
+                작가: {webtoon.author_name || '익명'}
               </div>
               <div className="webtoon-stats">
                 <span>

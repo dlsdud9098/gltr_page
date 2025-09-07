@@ -8,7 +8,7 @@ import random
 from datetime import datetime
 
 from database import get_db
-from models import ChatMessage, Webtoon, Character, Episode
+from models import ChatMessage, Webtoon, Character, Scene
 from schemas import (
     ChatMessageCreate, ChatMessageUpdate, 
     ChatMessageResponse, CharacterResponse

@@ -10,7 +10,7 @@ from PIL import Image
 import io
 
 from database import get_db
-from models import Webtoon, Episode, Character, Like
+from models import Webtoon, Scene, Character, Like
 from schemas import (
     WebtoonCreate, WebtoonUpdate, WebtoonResponse, WebtoonListResponse,
     CharacterCreate, CharacterResponse, CharacterUpdate,

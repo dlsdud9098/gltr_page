@@ -35,6 +35,7 @@ class Webtoon(Base):
     generation_sessions = relationship("GenerationSession", back_populates="webtoon")
     images = relationship("ImageAsset", back_populates="webtoon")
     likes = relationship("Like", back_populates="webtoon", cascade="all, delete-orphan")
+    chat_messages = relationship("ChatMessage", back_populates="webtoon", cascade="all, delete-orphan")
 
 
 class Scene(Base):

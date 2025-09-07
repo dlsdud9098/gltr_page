@@ -22,9 +22,9 @@ const WebtoonPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [webtoon, setWebtoon] = useState(null);
-  const [episodes, setEpisodes] = useState([]);
+  const [scenes, setScenes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEpisode, setSelectedEpisode] = useState(null);
+  const [selectedSceneGroup, setSelectedSceneGroup] = useState(null);
   const [interactionTab, setInteractionTab] = useState('chat');
   const [chatMessages, setChatMessages] = useState([]);
   const [unreadMessages, setUnreadMessages] = useState(3); // 임시 데이터
@@ -69,30 +69,32 @@ const WebtoonPage = () => {
 
   const fetchWebtoonData = async () => {
     try {
-      const [webtoonRes, episodesRes] = await Promise.all([
+      const [webtoonRes, scenesRes] = await Promise.all([
         api.get(`/api/webtoons/${id}`),
-        api.get(`/api/episodes/webtoon/${id}`),
+        api.get(`/api/scenes/webtoon/${id}`),
       ]);
       
       setWebtoon(webtoonRes.data);
       
-      const groupedEpisodes = episodesRes.data.reduce((acc, episode) => {
-        if (!acc[episode.episode_number]) {
-          acc[episode.episode_number] = [];
+      // Scenes를 10개씩 그룹으로 나누기 (에피소드처럼 표시)
+      const groupedScenes = {};
+      scenesRes.data.forEach(scene => {
+        const groupNum = Math.floor((scene.scene_number - 1) / 10) + 1;
+        if (!groupedScenes[groupNum]) {
+          groupedScenes[groupNum] = [];
         }
-        acc[episode.episode_number].push(episode);
-        return acc;
-      }, {});
-      
-      Object.keys(groupedEpisodes).forEach(epNum => {
-        groupedEpisodes[epNum].sort((a, b) => a.scene_order - b.scene_order);
+        groupedScenes[groupNum].push(scene);
       });
       
-      setEpisodes(groupedEpisodes);
+      Object.keys(groupedScenes).forEach(groupNum => {
+        groupedScenes[groupNum].sort((a, b) => a.scene_number - b.scene_number);
+      });
       
-      const firstEpisodeNum = Object.keys(groupedEpisodes)[0];
-      if (firstEpisodeNum) {
-        setSelectedEpisode(parseInt(firstEpisodeNum));
+      setScenes(groupedScenes);
+      
+      const firstGroupNum = Object.keys(groupedScenes)[0];
+      if (firstGroupNum) {
+        setSelectedSceneGroup(parseInt(firstGroupNum));
       }
     } catch (error) {
       console.error('Failed to fetch webtoon data:', error);
@@ -330,16 +332,17 @@ const WebtoonPage = () => {
           <Button icon={<ShareAltOutlined />} onClick={handleShare} />
         </div>
 
-        {/* Horizontal Carousel for Episodes */}
+        {/* Horizontal Carousel for Scenes */}
         <div className="mobile-carousel-container">
           <Carousel ref={carouselRef} dots={false}>
-            {selectedEpisode && episodes[selectedEpisode]?.map((scene) => (
+            {selectedSceneGroup && scenes[selectedSceneGroup]?.map((scene) => (
               <div key={scene.id} className="mobile-scene-slide">
                 {scene.image_url ? (
                   <img src={scene.image_url} alt={`Scene ${scene.scene_order}`} />
                 ) : (
                   <div className="scene-placeholder-mobile">
                     <FileImageOutlined style={{ fontSize: 48 }} />
+                    <p>씬 {scene.scene_number}</p>
                   </div>
                 )}
               </div>
@@ -503,32 +506,36 @@ const WebtoonPage = () => {
             </Space>
           </div>
 
-          {/* Episodes Tabs */}
+          {/* Scenes Tabs */}
           <Tabs 
-            activeKey={String(selectedEpisode)} 
-            onChange={(key) => setSelectedEpisode(parseInt(key))}
+            activeKey={String(selectedSceneGroup)} 
+            onChange={(key) => setSelectedSceneGroup(parseInt(key))}
             className="episode-tabs"
           >
-            {Object.keys(episodes).map(episodeNum => (
-              <Tabs.TabPane tab={`EP.${episodeNum}`} key={episodeNum}>
+            {Object.keys(scenes).map(groupNum => (
+              <Tabs.TabPane tab={`Part ${groupNum}`} key={groupNum}>
                 <div className="episode-viewer">
-                  {episodes[episodeNum].map((scene) => (
+                  {scenes[groupNum].map((scene) => (
                     <div key={scene.id} className="scene-vertical">
                       {scene.image_url ? (
                         <img
                           src={scene.image_url}
-                          alt={`Scene ${scene.scene_order}`}
+                          alt={`Scene ${scene.scene_number}`}
                           className="scene-image-vertical"
                         />
                       ) : (
                         <div className="scene-placeholder-vertical">
                           <FileImageOutlined style={{ fontSize: 64 }} />
-                          <p>씬 {scene.scene_order}</p>
+                          <p>씬 {scene.scene_number}</p>
                         </div>
                       )}
-                      {(scene.dialogue || scene.narration) && (
+                      {(scene.dialogues?.length > 0 || scene.narration) && (
                         <div className="scene-text-overlay">
-                          {scene.dialogue && <div className="dialogue">{scene.dialogue}</div>}
+                          {scene.dialogues?.map((dialogue, idx) => (
+                            <div key={idx} className="dialogue">
+                              <strong>{dialogue.who_speaks}:</strong> {dialogue.dialogue}
+                            </div>
+                          ))}
                           {scene.narration && <div className="narration">{scene.narration}</div>}
                         </div>
                       )}

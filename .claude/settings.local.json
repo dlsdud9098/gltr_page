@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(rm:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(source:*)",
+      "Bash(python:*)",
+      "Bash(PGPASSWORD=1234 psql:*)",
+      "Bash(export PGPASSWORD=1234)",
+      "Bash(psql:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(lsof:*)",
+      "Read(//home/apic/Documents/gltr_days/일지/2025-09-07/**)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
