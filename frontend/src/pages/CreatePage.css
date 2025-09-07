@@ -1,0 +1,97 @@
+.create-page {
+  padding: 40px 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.create-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.create-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.create-header h2 {
+  margin-bottom: 8px;
+}
+
+.steps-container {
+  margin-bottom: 40px;
+}
+
+.create-form {
+  width: 100%;
+}
+
+.steps-content {
+  min-height: 300px;
+  padding: 20px 0;
+}
+
+.step-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.steps-action {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.ai-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-input-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.ai-options {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.thumbnail-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+}
+
+.thumbnail-uploader {
+  margin-top: 20px;
+}
+
+.ant-upload-select-picture-card {
+  width: 200px;
+  height: 300px;
+}
+
+@media (max-width: 768px) {
+  .create-page {
+    padding: 20px 10px;
+  }
+  
+  .step-content {
+    padding: 0 10px;
+  }
+  
+  .ai-options {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
