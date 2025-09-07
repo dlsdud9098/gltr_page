@@ -17,7 +17,7 @@ if [ -f "$PID_FILE" ]; then
     # 백엔드 서버 종료
     if [ ! -z "$BACKEND_PID" ]; then
         if kill -0 $BACKEND_PID 2>/dev/null; then
-            echo "📦 백엔드 서버 종료 중... (PID: $BACKEND_PID)"
+            echo "📦 백엔드 서버 종료 중... (PID: $BACKEND_PID, 포트: ${BACKEND_PORT:-8000})"
             kill $BACKEND_PID
             echo "✅ 백엔드 서버 종료됨"
         else
@@ -28,7 +28,7 @@ if [ -f "$PID_FILE" ]; then
     # 프론트엔드 서버 종료
     if [ ! -z "$FRONTEND_PID" ]; then
         if kill -0 $FRONTEND_PID 2>/dev/null; then
-            echo "🎨 프론트엔드 서버 종료 중... (PID: $FRONTEND_PID)"
+            echo "🎨 프론트엔드 서버 종료 중... (PID: $FRONTEND_PID, 포트: ${FRONTEND_PORT:-3000})"
             kill $FRONTEND_PID
             echo "✅ 프론트엔드 서버 종료됨"
         else
