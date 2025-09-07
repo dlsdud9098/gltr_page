@@ -19,7 +19,8 @@
       "Read(//home/apic/python/**)",
       "Bash(git commit:*)",
       "Bash(sudo -u postgres psql:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(uv pip install:*)"
     ],
     "deny": [],
     "ask": []

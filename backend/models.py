@@ -46,6 +46,8 @@ class Scene(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id', ondelete='CASCADE'))
     scene_number = Column(Integer, nullable=False)
+    title = Column(String(500))
+    description = Column(Text, nullable=False)  # DB 스키마와 일치
     scene_description = Column(Text)
     image_url = Column(String(500))
     narration = Column(Text)
