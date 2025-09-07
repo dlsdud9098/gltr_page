@@ -122,7 +122,7 @@ async def create_chat_message(
 
 @router.get("/chat/messages/webtoon/{webtoon_id}", response_model=List[ChatMessageResponse])
 async def get_webtoon_chat_messages(
-    webtoon_id: int,
+    webtoon_id: str,
     request: Request,
     response: Response,
     limit: int = 50,
@@ -176,7 +176,7 @@ async def get_webtoon_chat_messages(
 
 @router.put("/chat/messages/{message_id}/read", response_model=ChatMessageResponse)
 async def mark_message_as_read(
-    message_id: int,
+    message_id: str,
     request: Request,
     db: Session = Depends(get_db)
 ):
@@ -211,7 +211,7 @@ async def mark_message_as_read(
 
 @router.get("/chat/unread-count/webtoon/{webtoon_id}")
 async def get_unread_count(
-    webtoon_id: int,
+    webtoon_id: str,
     request: Request,
     response: Response,
     db: Session = Depends(get_db)
@@ -230,7 +230,7 @@ async def get_unread_count(
 
 @router.post("/chat/messages/batch-read")
 async def mark_messages_as_read(
-    message_ids: List[int],
+    message_ids: List[str],
     request: Request,
     db: Session = Depends(get_db)
 ):

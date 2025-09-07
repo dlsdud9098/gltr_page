@@ -95,7 +95,7 @@ async def get_my_webtoons(
 
 @router.get("/{webtoon_id}", response_model=WebtoonResponse)
 async def get_webtoon(
-    webtoon_id: int,
+    webtoon_id: str,
     request: Request,
     response: Response,
     db: Session = Depends(get_db)
@@ -156,7 +156,7 @@ async def create_webtoon(
 
 @router.put("/{webtoon_id}", response_model=WebtoonResponse)
 async def update_webtoon(
-    webtoon_id: int,
+    webtoon_id: str,
     webtoon_update: WebtoonUpdate,
     request: Request,
     response: Response,
@@ -203,7 +203,7 @@ async def update_webtoon(
 
 @router.delete("/{webtoon_id}")
 async def delete_webtoon(
-    webtoon_id: int,
+    webtoon_id: str,
     request: Request,
     db: Session = Depends(get_db)
 ):
@@ -238,7 +238,7 @@ async def delete_webtoon(
 
 @router.post("/{webtoon_id}/thumbnail")
 async def upload_thumbnail(
-    webtoon_id: int,
+    webtoon_id: str,
     request: Request,
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
@@ -299,7 +299,7 @@ async def upload_thumbnail(
 # Character endpoints
 @router.get("/{webtoon_id}/characters", response_model=List[CharacterResponse])
 async def get_webtoon_characters(
-    webtoon_id: int,
+    webtoon_id: str,
     db: Session = Depends(get_db)
 ):
     """Get characters of a webtoon"""
@@ -311,7 +311,7 @@ async def get_webtoon_characters(
 
 @router.post("/{webtoon_id}/characters", response_model=CharacterResponse)
 async def create_character(
-    webtoon_id: int,
+    webtoon_id: str,
     character: CharacterCreate,
     request: Request,
     db: Session = Depends(get_db)
@@ -352,8 +352,8 @@ async def create_character(
 
 @router.put("/{webtoon_id}/characters/{character_id}", response_model=CharacterResponse)
 async def update_character(
-    webtoon_id: int,
-    character_id: int,
+    webtoon_id: str,
+    character_id: str,
     character_update: CharacterUpdate,
     request: Request,
     db: Session = Depends(get_db)

@@ -20,7 +20,7 @@ router = APIRouter()
 
 @router.get("/webtoon/{webtoon_id}", response_model=List[SceneResponse])
 async def get_webtoon_scenes(
-    webtoon_id: int,
+    webtoon_id: str,
     db: Session = Depends(get_db)
 ):
     """Get scenes of a webtoon with dialogues"""
@@ -36,7 +36,7 @@ async def get_webtoon_scenes(
 
 @router.get("/{scene_id}", response_model=SceneResponse)
 async def get_scene(
-    scene_id: int,
+    scene_id: str,
     db: Session = Depends(get_db)
 ):
     """Get a specific scene with dialogues"""

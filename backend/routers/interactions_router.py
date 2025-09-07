@@ -17,7 +17,7 @@ router = APIRouter()
 
 @router.post("/like", response_model=LikeResponse)
 async def toggle_like(
-    webtoon_id: int,
+    webtoon_id: str,
     request: Request,
     response: Response,
     db: Session = Depends(get_db)
@@ -108,7 +108,7 @@ async def create_comment(
 
 @router.get("/comments/webtoon/{webtoon_id}", response_model=List[CommentResponse])
 async def get_webtoon_comments(
-    webtoon_id: int,
+    webtoon_id: str,
     request: Request,
     response: Response,
     db: Session = Depends(get_db)
@@ -144,7 +144,7 @@ async def get_webtoon_comments(
 
 @router.put("/comments/{comment_id}", response_model=CommentResponse)
 async def update_comment(
-    comment_id: int,
+    comment_id: str,
     comment_update: CommentUpdate,
     request: Request,
     db: Session = Depends(get_db)
@@ -186,7 +186,7 @@ async def update_comment(
 
 @router.delete("/comments/{comment_id}")
 async def delete_comment(
-    comment_id: int,
+    comment_id: str,
     request: Request,
     db: Session = Depends(get_db)
 ):
