@@ -18,7 +18,8 @@
       "Bash(cat:*)",
       "Read(//home/apic/python/**)",
       "Bash(git commit:*)",
-      "Bash(sudo -u postgres psql:*)"
+      "Bash(sudo -u postgres psql:*)",
+      "Bash(chmod:*)"
     ],
     "deny": [],
     "ask": []
