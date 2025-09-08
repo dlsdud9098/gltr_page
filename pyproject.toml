@@ -5,9 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "torch>=2.3.0,<2.5.0", # CUDA 12.1 지원
-    "torchvision>=0.18.0",
-    "torchaudio>=2.3.0",
+    "torch>=2.7.1", # CUDA 12.1 지원
+    "torchvision>=0.22.1",
+    "torchaudio>=2.7.1",
     "fastapi>=0.116.1",
     "uvicorn[standard]>=0.35.0",
     "pillow>=11.3.0",
@@ -22,16 +22,12 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-torch = { index = "pytorch-cu121" }
-torchvision = { index = "pytorch-cu121" }
-torchaudio = { index = "pytorch-cu121" }
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+torchaudio = { index = "pytorch-cu128" }
 
 [[tool.uv.index]]
-name = "pytorch-cu121"
-url = "https://download.pytorch.org/whl/cu121"
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
-[tool.uv.workspace]
-members = [
-    "text2cuts-dev-environment",
-]

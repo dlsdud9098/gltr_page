@@ -7,10 +7,14 @@ from fastapi.staticfiles import StaticFiles
 import os
 from dotenv import load_dotenv
 
-from database import init_db
+from database import engine, get_db
+from models import Base
 from routers import webtoons_router, scenes_router, interactions_router, chat_router
 
 load_dotenv()
+
+# Create all tables
+Base.metadata.create_all(bind=engine)
 
 # Create FastAPI app
 app = FastAPI(
@@ -45,7 +49,7 @@ app.include_router(chat_router.router, prefix="/api", tags=["Chat"])
 @app.on_event("startup")
 async def startup_event():
     """Initialize database on startup"""
-    init_db()
+    # Tables are already created by Base.metadata.create_all(bind=engine)
     print("Database initialized")
 
 @app.get("/")

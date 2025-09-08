@@ -129,10 +129,10 @@ class Comment(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id', ondelete='CASCADE'))
-    scene_id = Column(Integer, ForeignKey('scenes.id', ondelete='CASCADE'), nullable=True)
+    scene_id = Column(UUID(as_uuid=True), ForeignKey('scenes.id', ondelete='CASCADE'), nullable=True)
     author_name = Column(String(100), default='익명')
     content = Column(Text, nullable=False)
-    parent_comment_id = Column(Integer, ForeignKey('comments.id'), nullable=True)
+    parent_comment_id = Column(UUID(as_uuid=True), ForeignKey('comments.id'), nullable=True)
     session_id = Column(String(100))
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -148,7 +148,7 @@ class GenerationSession(Base):
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     session_id = Column(String(100), nullable=False, index=True)
-    webtoon_id = Column(Integer, ForeignKey('webtoons.id'), nullable=True)
+    webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id'), nullable=True)
     input_text = Column(Text)
     generation_result = Column(JSON)  # 추가: 생성된 전체 JSON 결과 저장
     summary = Column(Text)
@@ -175,7 +175,7 @@ class ImageAsset(Base):
     mime_type = Column(String(50))
     width = Column(Integer)
     height = Column(Integer)
-    webtoon_id = Column(Integer, ForeignKey('webtoons.id'), nullable=True)
+    webtoon_id = Column(UUID(as_uuid=True), ForeignKey('webtoons.id'), nullable=True)
     scene_id = Column(UUID(as_uuid=True), ForeignKey('scenes.id'), nullable=True)
     asset_type = Column(String(50))
     session_id = Column(String(100))

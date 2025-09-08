@@ -20,7 +20,10 @@
       "Bash(git commit:*)",
       "Bash(sudo -u postgres psql:*)",
       "Bash(chmod:*)",
-      "Bash(uv pip install:*)"
+      "Bash(uv pip install:*)",
+      "Bash(alembic revision:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm start)"
     ],
     "deny": [],
     "ask": []
