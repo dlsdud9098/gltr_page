@@ -72,7 +72,7 @@
 
 .scene-vertical {
   position: relative;
-  margin-bottom: 0;
+  margin-bottom: 2px;
   background: #000;
 }
 
