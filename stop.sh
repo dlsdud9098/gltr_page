@@ -17,7 +17,7 @@ if [ -f "$PID_FILE" ]; then
     # 백엔드 서버 종료
     if [ ! -z "$BACKEND_PID" ]; then
         if kill -0 $BACKEND_PID 2>/dev/null; then
-            echo "📦 백엔드 서버 종료 중... (PID: $BACKEND_PID, 포트: ${BACKEND_PORT:-8000})"
+            echo "📦 백엔드 서버 종료 중... (PID: $BACKEND_PID, 포트: ${BACKEND_PORT:-8001})"
             kill $BACKEND_PID
             echo "✅ 백엔드 서버 종료됨"
         else
@@ -28,7 +28,7 @@ if [ -f "$PID_FILE" ]; then
     # 프론트엔드 서버 종료
     if [ ! -z "$FRONTEND_PID" ]; then
         if kill -0 $FRONTEND_PID 2>/dev/null; then
-            echo "🎨 프론트엔드 서버 종료 중... (PID: $FRONTEND_PID, 포트: ${FRONTEND_PORT:-3000})"
+            echo "🎨 프론트엔드 서버 종료 중... (PID: $FRONTEND_PID, 포트: ${FRONTEND_PORT:-3001})"
             kill $FRONTEND_PID
             echo "✅ 프론트엔드 서버 종료됨"
         else
@@ -48,20 +48,36 @@ fi
 echo ""
 echo "🔍 남은 프로세스 확인 중..."
 
+# Python main.py 백엔드 프로세스 종료
+PYTHON_PIDS=$(pgrep -f "python.*main.py")
+if [ ! -z "$PYTHON_PIDS" ]; then
+    echo "📦 남은 백엔드(Python) 프로세스 종료 중..."
+    kill -9 $PYTHON_PIDS 2>/dev/null
+    echo "✅ 백엔드(Python) 프로세스 종료됨"
+fi
+
 # uvicorn 프로세스 종료
 UVICORN_PIDS=$(pgrep -f "uvicorn main:app")
 if [ ! -z "$UVICORN_PIDS" ]; then
-    echo "📦 남은 백엔드 프로세스 종료 중..."
-    kill $UVICORN_PIDS 2>/dev/null
-    echo "✅ 백엔드 프로세스 종료됨"
+    echo "📦 남은 백엔드(Uvicorn) 프로세스 종료 중..."
+    kill -9 $UVICORN_PIDS 2>/dev/null
+    echo "✅ 백엔드(Uvicorn) 프로세스 종료됨"
 fi
 
-# react-scripts 프로세스 종료
-REACT_PIDS=$(pgrep -f "react-scripts start")
+# react-scripts 프로세스 종료 (모든 react-scripts 프로세스 포함)
+REACT_PIDS=$(pgrep -f "react-scripts.*start")
 if [ ! -z "$REACT_PIDS" ]; then
     echo "🎨 남은 프론트엔드 프로세스 종료 중..."
-    kill $REACT_PIDS 2>/dev/null
+    kill -9 $REACT_PIDS 2>/dev/null
     echo "✅ 프론트엔드 프로세스 종료됨"
+fi
+
+# gltr_page 프로젝트의 node 프로세스 종료
+NODE_PIDS=$(ps aux | grep -E "node.*gltr_page/frontend" | grep -v grep | awk '{print $2}')
+if [ ! -z "$NODE_PIDS" ]; then
+    echo "🎨 남은 Node.js 프로세스 종료 중..."
+    kill -9 $NODE_PIDS 2>/dev/null
+    echo "✅ Node.js 프로세스 종료됨"
 fi
 
 echo ""
