@@ -23,7 +23,8 @@
       "Bash(uv pip install:*)",
       "Bash(alembic revision:*)",
       "Bash(npm run dev:*)",
-      "Bash(npm start)"
+      "Bash(npm start)",
+      "Bash(PORT=3001 npm start)"
     ],
     "deny": [],
     "ask": []
